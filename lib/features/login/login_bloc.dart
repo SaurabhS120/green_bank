@@ -1,12 +1,13 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:green_bank/domain/usecase/login/login_usecase.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState>{
-  LoginBloc() : super(LoginInitial()){
+  final LoginUsecase loginUsecase;
+  LoginBloc(this.loginUsecase) : super(LoginInitial()){
     on<LoginButtonPressed>((event, emit) async {
       emit(LoginLoading());
-      await Future.delayed(const Duration(seconds: 2));
-      if(event.username == 'admin' && event.password == 'admin'){
+      if(await loginUsecase.execute(event.username, event.password)){
         emit(LoginSuccess());
       }else{
         emit(LoginFailure(error: 'Invalid credentials'));

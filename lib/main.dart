@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:green_bank/domain/usecase/login/login_usecase.dart';
 import 'package:green_bank/features/login/login_bloc.dart';
 import 'package:green_bank/features/login/login_page.dart';
 
@@ -17,9 +18,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: BlocProvider(
-        create: (context) => LoginBloc(),
-        child: const LoginPage(),
+      home: RepositoryProvider(
+        create: (context) => LoginUsecase(),
+        child: BlocProvider(
+          create: (context) => LoginBloc(context.read<LoginUsecase>()),
+          child: const LoginPage(),
+        ),
       ),
     );
   }
