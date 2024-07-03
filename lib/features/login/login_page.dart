@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:green_bank/features/login/login_bloc.dart';
+import 'package:green_bank/ui/app_loader.dart';
 import 'package:green_bank/ui/form/app_form.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -15,30 +16,34 @@ class LoginPage extends StatelessWidget{
       ),
       body: BlocConsumer<LoginBloc,LoginState>(
         builder: (BuildContext context, state) {
-          switch(state){
-            case LoginLoading state:
-              return const Center(child: CircularProgressIndicator());
-            default:
-              return AppForm(
-                children: [
-                  FormTextField(
-                    labelText: 'Username',
-                    controller: context.read<LoginBloc>().usernameController,
-                  ),
-                  FormTextField(
-                    labelText: 'Password',
-                    controller: context.read<LoginBloc>().passwordController,
-                  ),
-                  FormButton(
-                    text: 'Login',
-                    onPressed:context.read<LoginBloc>().login,
-                  ),
-                ],
-              );
-          }
+          return Stack(
+            children: [
+              AppForm(
+              children: [
+                FormTextField(
+                  labelText: 'Username',
+                  controller: context.read<LoginBloc>().usernameController,
+                ),
+                FormTextField(
+                  labelText: 'Password',
+                  controller: context.read<LoginBloc>().passwordController,
+                ),
+                FormButton(
+                  text: 'Login',
+                  onPressed:context.read<LoginBloc>().login,
+                ),
+              ],
+            ),
+            if(state is LoginLoading)
+              const AppLoader(),
+            ],
+          );
         },
         listener: (BuildContext context, Object? state) {
           switch(state){
+            case LoginLoading _:
+              AppLoader.closeKeyboard();
+              break;
             case LoginFailure state:
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -47,7 +52,7 @@ class LoginPage extends StatelessWidget{
                 ),
               );
               break;
-            case LoginSuccess state:
+            case LoginSuccess _:
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text("Login successful"),
