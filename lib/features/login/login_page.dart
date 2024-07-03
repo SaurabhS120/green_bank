@@ -21,8 +21,14 @@ class LoginPage extends StatelessWidget{
             default:
               return AppForm(
                 children: [
-                  const FormTextField(labelText: 'Username'),
-                  const FormTextField(labelText: 'Password'),
+                  FormTextField(
+                    labelText: 'Username',
+                    controller: context.read<LoginBloc>().usernameController,
+                  ),
+                  FormTextField(
+                    labelText: 'Password',
+                    controller: context.read<LoginBloc>().passwordController,
+                  ),
                   FormButton(
                     text: 'Login',
                     onPressed:context.read<LoginBloc>().login,
