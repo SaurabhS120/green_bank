@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:green_bank/ui/form/app_form.dart';
 
 class LoginPage extends StatelessWidget{
   const LoginPage({super.key});
@@ -11,9 +11,21 @@ class LoginPage extends StatelessWidget{
         title: const Text('Login Page'),
         backgroundColor: Colors.green,
       ),
-      body: const Center(
-        child: Text('Login Page'),
-      ),
+      body: AppForm(
+        children: [
+          const FormTextField(
+            labelText: 'Username',
+          ),
+          const FormTextField(
+            labelText: 'Password',
+          ),
+          FormButton(
+            text: 'Login',
+            onPressed: () {
+            },
+          ),
+        ],
+      )
     );
   }
 }
