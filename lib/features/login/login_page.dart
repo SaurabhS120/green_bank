@@ -21,14 +21,17 @@ class LoginPage extends StatelessWidget{
               AppForm(
               children: [
                 FormTextField(
+                  key: const Key('usernameInput'),
                   labelText: 'Username',
                   controller: context.read<LoginBloc>().usernameController,
                 ),
                 FormTextField(
+                  key: const Key('passwordInput'),
                   labelText: 'Password',
                   controller: context.read<LoginBloc>().passwordController,
                 ),
                 FormButton(
+                  key: const Key('loginButton'),
                   text: 'Login',
                   onPressed:context.read<LoginBloc>().login,
                 ),
@@ -45,26 +48,24 @@ class LoginPage extends StatelessWidget{
               AppLoader.closeKeyboard();
               break;
             case LoginFailure state:
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text("Login failed: ${state.error}"),
-                  backgroundColor: Colors.red,
-                ),
-              );
+              _showSnackBar(context, message: "Login failed: ${state.error}", color: Colors.red);
               break;
             case LoginSuccess _:
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Login successful"),
-                  backgroundColor: Colors.green,
-                ),
-              );
+              _showSnackBar(context,message: "Login successful", color:Colors.green);
               break;
             default:
               break;
           }
         },
       )
+    );
+  }
+  static _showSnackBar(BuildContext context, {required String message, required Color color}){
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(key:const Key('snackBarTitle'),message),
+        backgroundColor: color,
+      ),
     );
   }
 }
