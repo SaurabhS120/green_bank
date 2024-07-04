@@ -9,19 +9,19 @@ void main() {
       const SnackBarType snackBarType = SnackBarType.success;
       SnackBarFactory snackBarFactory = const SnackBarFactoryImpl();
       SnackBarShower snackBarShower = snackBarFactory.createSnackBar(snackBarType);
-      expect(snackBarShower, isA<SuccessSnackBarShower>());
+      expect(snackBarShower, isA<SuccessSnackBarShower>(), reason: "Should show success snack bar for success type");
     });
     test("Warning snack bar unit test", (){
       const SnackBarType snackBarType = SnackBarType.warning;
       SnackBarFactory snackBarFactory = const SnackBarFactoryImpl();
       SnackBarShower snackBarShower = snackBarFactory.createSnackBar(snackBarType);
-      expect(snackBarShower, isA<WarningSnackBarShower>());
+      expect(snackBarShower, isA<WarningSnackBarShower>(), reason: "Should show warning snack bar for warning type");
     });
     test("Error snack bar unit test", (){
       const SnackBarType snackBarType = SnackBarType.error;
       SnackBarFactory snackBarFactory = const SnackBarFactoryImpl();
       SnackBarShower snackBarShower = snackBarFactory.createSnackBar(snackBarType);
-      expect(snackBarShower, isA<ErrorSnackBarShower>());
+      expect(snackBarShower, isA<ErrorSnackBarShower>(), reason: "Should show error snack bar for error type");
     });
     testWidgets("Success Snack Bar Test", (WidgetTester tester) async {
       const Key targetKey = Key('showSnackBarButton');
