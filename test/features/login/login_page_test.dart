@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:green_bank/domain/usecase/login/login_dummy_usecase.dart';
 import 'package:green_bank/features/login/login_bloc.dart';
 import 'package:green_bank/features/login/login_page.dart';
-import 'package:green_bank/ui/app_loader.dart';
 
 void main(){
   TestWidgetsFlutterBinding.ensureInitialized();

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:green_bank/features/login/login_bloc.dart';
+import 'package:green_bank/ui/snackbar/app_snack_bar.dart';
 import 'package:green_bank/ui/app_loader.dart';
 import 'package:green_bank/ui/form/app_form.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -48,24 +49,16 @@ class LoginPage extends StatelessWidget{
               AppLoader.closeKeyboard();
               break;
             case LoginFailure state:
-              _showSnackBar(context, message: "Login failed: ${state.error}", color: Colors.red);
+              AppSnackBar.showSnackBar(context, message: "Login failed: ${state.error}", type: SnackBarType.error);
               break;
             case LoginSuccess _:
-              _showSnackBar(context,message: "Login successful", color:Colors.green);
+              AppSnackBar.showSnackBar(context,message: "Login successful", type: SnackBarType.success);
               break;
             default:
               break;
           }
         },
       )
-    );
-  }
-  static _showSnackBar(BuildContext context, {required String message, required Color color}){
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(key:const Key('snackBarTitle'),message),
-        backgroundColor: color,
-      ),
     );
   }
 }

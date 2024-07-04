@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class AppLoader extends StatelessWidget{
@@ -15,6 +14,7 @@ class AppLoader extends StatelessWidget{
   }
 
   static void closeKeyboard() {
+
     FocusManager.instance.primaryFocus?.unfocus();
   }
 }
