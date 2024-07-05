@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:green_bank/features/login/login_bloc.dart';
+import 'package:green_bank/ui/form/app_divider.dart';
 import 'package:green_bank/ui/snackbar/app_snack_bar.dart';
 import 'package:green_bank/ui/app_loader.dart';
 import 'package:green_bank/ui/form/app_form.dart';
@@ -36,7 +37,7 @@ class LoginPage extends StatelessWidget{
                   text: 'Login',
                   onPressed:context.read<LoginBloc>().login,
                 ),
-                const Divider(),
+                const AppDivider(),
                 FormButton(text: 'Register', onPressed: () => Navigator.pushNamed(context, '/register')),
               ],
             ),
