@@ -3,7 +3,7 @@ import 'package:green_bank/domain/usecase/register/register_usecase.dart';
 
 class RegisterDummyUsecase extends RegisterUsecase{
   @override
-  Future<bool> register(RegisterRequestModel requestModel) async {
+  Future<bool> execute(RegisterRequestModel requestModel) async {
     return true;
   }
 }

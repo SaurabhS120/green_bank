@@ -7,13 +7,13 @@ import 'package:green_bank/features/register/register_bloc.dart';
 void main(){
   group("RegisterBloc", (){
     blocTest("Register success test",
-      build: () => RegisterBloc(registerUsecase:RegisterDummyUsecase()),
+      build: () => RegisterBloc(RegisterDummyUsecase()),
       act: (bloc) => bloc.add(RegisterButtonPressed(name: 'test',username: 'admin', password: 'admin', confirmPassword: 'admin', email: 'test@gmail.com', phone: '1234567890',)),
       expect: () => [isA<RegisterLoading>(), isA<RegisterSuccess>()],
     );
     group("Validation test", (){
       blocTest("Name empty test",
-        build: () => RegisterBloc(registerUsecase:RegisterDummyUsecase()),
+        build: () => RegisterBloc(RegisterDummyUsecase()),
         act: (bloc) => bloc.add(RegisterButtonPressed(name: '',username: 'admin', password: 'admin', confirmPassword: 'admin', email: 'test@gmail.com', phone: '1234567890',),),
         expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
         verify: (bloc) {
@@ -22,7 +22,7 @@ void main(){
         }
       );
       blocTest("Username empty test",
-        build: () => RegisterBloc(registerUsecase:RegisterDummyUsecase()),
+        build: () => RegisterBloc(RegisterDummyUsecase()),
         act: (bloc) => bloc.add(RegisterButtonPressed(name: 'test',username: '', password: 'admin', confirmPassword: 'admin', email: 'test@gmail.com', phone: '1234567890',),),
         expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
         verify: (bloc) {
@@ -31,7 +31,7 @@ void main(){
         }
       );
       blocTest("Password empty test",
-        build: () => RegisterBloc(registerUsecase:RegisterDummyUsecase()),
+        build: () => RegisterBloc(RegisterDummyUsecase()),
         act: (bloc) => bloc.add(RegisterButtonPressed(name: 'test',username: 'admin', password: '', confirmPassword: 'admin', email: 'test@gmail.com', phone: '1234567890',),),
         expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
         verify: (bloc) {
@@ -40,7 +40,7 @@ void main(){
         }
       );
       blocTest("Confirm password empty test",
-        build: () => RegisterBloc(registerUsecase:RegisterDummyUsecase()),
+        build: () => RegisterBloc(RegisterDummyUsecase()),
         act: (bloc) => bloc.add(RegisterButtonPressed(name: 'test',username: 'admin', password: 'admin', confirmPassword: '', email: 'test@gmail.com', phone: '1234567890',),),
         expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
         verify: (bloc) {
@@ -49,7 +49,7 @@ void main(){
         }
       );
       blocTest("Email empty test",
-        build: () => RegisterBloc(registerUsecase:RegisterDummyUsecase()),
+        build: () => RegisterBloc(RegisterDummyUsecase()),
         act: (bloc) => bloc.add(RegisterButtonPressed(name: 'test',username: 'admin', password: 'admin', confirmPassword: 'admin', email: '', phone: '1234567890',),),
         expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
         verify: (bloc) {
@@ -58,7 +58,7 @@ void main(){
         }
       );
       blocTest("Phone empty test",
-        build: () => RegisterBloc(registerUsecase:RegisterDummyUsecase()),
+        build: () => RegisterBloc(RegisterDummyUsecase()),
         act: (bloc) => bloc.add(RegisterButtonPressed(name: 'test',username: 'admin', password: 'admin', confirmPassword: 'admin', email: 'test@gmail.com', phone: '',),),
         expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
         verify: (bloc) {
@@ -67,7 +67,7 @@ void main(){
         }
       );
       blocTest("Confirm password not match test",
-        build: () => RegisterBloc(registerUsecase:RegisterDummyUsecase()),
+        build: () => RegisterBloc(RegisterDummyUsecase()),
         act: (bloc) => bloc.add(RegisterButtonPressed(name: 'test',username: 'admin', password: 'admin', confirmPassword: 'admin1', email: 'test@gmail.com', phone: '1234567890',),),
         expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
         verify: (bloc) {

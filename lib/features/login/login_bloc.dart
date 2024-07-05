@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:green_bank/domain/usecase/login/login_usecase.dart';
 
@@ -28,19 +29,28 @@ class LoginButtonPressed extends LoginEvent{
   final String password;
   LoginButtonPressed({required this.username, required this.password});
 }
-sealed class LoginState{
+sealed class LoginState extends Equatable{
 
 }
 class LoginInitial extends LoginState{
+  @override
+  List<Object?> get props => [];
 
 }
 class LoginLoading extends LoginState{
+  @override
+  List<Object?> get props => [];
 
 }
 class LoginFailure extends LoginState{
   final String error;
   LoginFailure({required this.error});
+
+  @override
+  List<Object?> get props => [error];
 }
 class LoginSuccess extends LoginState{
+  @override
+  List<Object?> get props => [];
 
 }

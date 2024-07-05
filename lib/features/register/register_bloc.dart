@@ -1,11 +1,20 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:green_bank/domain/model/register_request_model.dart';
 import 'package:green_bank/domain/usecase/register/register_usecase.dart';
 
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
-  RegisterUsecase registerUsecase;
-  RegisterBloc({required this.registerUsecase}) : super(const RegisterInitial()){
+  final RegisterUsecase registerUsecase;
+
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+
+  RegisterBloc(this.registerUsecase) : super(const RegisterInitial()){
     on<RegisterButtonPressed>((event, emit) async {
       emit(const RegisterLoading());
       final validationErrorPrototype = RegisterValidationErrorPrototype();
@@ -34,7 +43,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       if(validationError.hasError()) {
         emit(validationError);
       }else{
-        if (await registerUsecase.register(event.toRequestModel())) {
+        if (await registerUsecase.execute(event.toRequestModel())) {
           emit(const RegisterSuccess());
         } else {
           emit(const RegisterFailure(error: 'Register failed'));

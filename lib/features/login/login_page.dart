@@ -36,6 +36,8 @@ class LoginPage extends StatelessWidget{
                   text: 'Login',
                   onPressed:context.read<LoginBloc>().login,
                 ),
+                const Divider(),
+                FormButton(text: 'Register', onPressed: () => Navigator.pushNamed(context, '/register')),
               ],
             ),
             if(state is LoginLoading)
