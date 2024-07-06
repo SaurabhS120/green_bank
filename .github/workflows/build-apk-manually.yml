@@ -12,20 +12,6 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: 3.22.1
-
-      - name: Domain layer preparation
-        run: |
-          cd domain
-          flutter clean
-          flutter pub get
-          dart run build_runner build --delete-conflicting-outputs
-      
-      - name: Data layer preparation
-        run: |
-          cd data
-          flutter clean
-          flutter pub get
-          dart run build_runner build --delete-conflicting-outputs
       
       - name: Presentation layer preparation
         run: |
