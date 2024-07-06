@@ -22,6 +22,7 @@ class RegisterPage extends StatelessWidget {
                 child: AppForm(
                   children: [
                     FormTextField(
+                      key: const Key('nameInput'),
                       labelText: 'Name',
                       controller: context.read<RegisterBloc>().nameController,
                       onErrorBuild: (BuildContext context){
@@ -44,6 +45,7 @@ class RegisterPage extends StatelessWidget {
                       },
                     ),
                     FormTextField(
+                      key: const Key('usernameInput'),
                       labelText: 'Username',
                       controller: context.read<RegisterBloc>().usernameController,
                       onErrorBuild: (BuildContext context) {
@@ -57,7 +59,7 @@ class RegisterPage extends StatelessWidget {
                           },
                           builder: (BuildContext context, RegisterUsernameValidationError? state) {
                             if(state != null && state is RegisterUsernameEmptyError){
-                              return const AppFormFieldErrorText(errorText:"Username cannot be empty");
+                              return const AppFormFieldErrorText(errorText:RegisterErrorMessages.usernameEmpty);
                             }else{
                               return const SizedBox();
                             }
@@ -66,6 +68,7 @@ class RegisterPage extends StatelessWidget {
                       },
                     ),
                     FormTextField(
+                      key: const Key('passwordInput'),
                       labelText: 'Password',
                       controller: context.read<RegisterBloc>().passwordController,
                       onErrorBuild: (BuildContext context) {
@@ -82,19 +85,19 @@ class RegisterPage extends StatelessWidget {
                               case RegisterPasswordNoError():
                                 return const SizedBox();
                               case RegisterPasswordEmptyError():
-                                return const AppFormFieldErrorText(errorText:"Password cannot be empty");
+                                return const AppFormFieldErrorText(errorText:RegisterErrorMessages.passwordEmpty);
                               case RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason reason):
                                 switch(reason){
                                   case RegisterPasswordFormatErrorReason.length:
-                                    return const AppFormFieldErrorText(errorText:"Password must be at least 12 characters long");
+                                    return const AppFormFieldErrorText(errorText:RegisterErrorMessages.passwordLength);
                                   case RegisterPasswordFormatErrorReason.lowercase:
-                                    return const AppFormFieldErrorText(errorText:"Password must contain at least one lowercase letter");
+                                    return const AppFormFieldErrorText(errorText:RegisterErrorMessages.passwordLowercase);
                                   case RegisterPasswordFormatErrorReason.uppercase:
-                                    return const AppFormFieldErrorText(errorText:"Password must contain at least one uppercase letter");
+                                    return const AppFormFieldErrorText(errorText:RegisterErrorMessages.passwordUppercase);
                                   case RegisterPasswordFormatErrorReason.number:
-                                    return const AppFormFieldErrorText(errorText:"Password must contain at least one number");
+                                    return const AppFormFieldErrorText(errorText:RegisterErrorMessages.passwordNumber);
                                   case RegisterPasswordFormatErrorReason.spacialCharacter:
-                                    return const AppFormFieldErrorText(errorText:"Password must contain at least one special character");
+                                    return const AppFormFieldErrorText(errorText:RegisterErrorMessages.passwordSpecialCharacter);
                                   default:
                                     return const SizedBox();
                                 }
@@ -106,6 +109,7 @@ class RegisterPage extends StatelessWidget {
                       },
                     ),
                     FormTextField(
+                      key: const Key('confirmPasswordInput'),
                       labelText: 'Confirm Password',
                       controller: context.read<RegisterBloc>().confirmPasswordController,
                       onErrorBuild: (BuildContext context) {
@@ -119,9 +123,9 @@ class RegisterPage extends StatelessWidget {
                           },
                           builder: (BuildContext context, RegisterConfirmPasswordValidationError? state) {
                             if(state != null && state is RegisterConfirmPasswordEmptyError){
-                              return const AppFormFieldErrorText(errorText:"Confirm Password cannot be empty");
+                              return const AppFormFieldErrorText(errorText:RegisterErrorMessages.confirmPasswordEmpty);
                             }else if(state != null && state is RegisterConfirmPasswordNotMatch){
-                              return const AppFormFieldErrorText(errorText:"Confirm Password not match");
+                              return const AppFormFieldErrorText(errorText:RegisterErrorMessages.confirmPasswordNotMatch);
                             }else{
                               return const SizedBox();
                             }
@@ -130,6 +134,7 @@ class RegisterPage extends StatelessWidget {
                       },
                     ),
                     FormTextField(
+                      key: const Key('emailInput'),
                       labelText: 'Email',
                       controller: context.read<RegisterBloc>().emailController,
                       onErrorBuild: (BuildContext context) {
@@ -143,7 +148,7 @@ class RegisterPage extends StatelessWidget {
                           },
                           builder: (BuildContext context, RegisterEmailValidationError? state) {
                             if(state != null && state is RegisterEmailEmptyError){
-                              return const AppFormFieldErrorText(errorText:"Email cannot be empty");
+                              return const AppFormFieldErrorText(errorText:RegisterErrorMessages.emailEmpty);
                             }else{
                               return const SizedBox();
                             }
@@ -152,6 +157,7 @@ class RegisterPage extends StatelessWidget {
                       },
                     ),
                     FormTextField(
+                      key: const Key('phoneInput'),
                       labelText: 'Phone',
                       controller: context.read<RegisterBloc>().phoneController,
                       onErrorBuild: (BuildContext context) {
@@ -165,7 +171,7 @@ class RegisterPage extends StatelessWidget {
                           },
                           builder: (BuildContext context, RegisterPhoneValidationError? state) {
                             if(state != null && state is RegisterPhoneEmptyError){
-                              return const AppFormFieldErrorText(errorText:"Phone cannot be empty");
+                              return const AppFormFieldErrorText(errorText:RegisterErrorMessages.phoneEmpty);
                             }else{
                               return const SizedBox();
                             }
@@ -174,6 +180,7 @@ class RegisterPage extends StatelessWidget {
                       },
                     ),
                     FormButton(
+                      key: const Key('registerButton'),
                       text: 'Register',
                       onPressed: () {
                         context.read<RegisterBloc>().add(
@@ -198,13 +205,33 @@ class RegisterPage extends StatelessWidget {
         },
         listener: (BuildContext context, Object? state) {
           if (state is RegisterFailure) {
-            AppSnackBar.showSnackBar(context, message: "Register failed: ${state.error}", type: SnackBarType.error);
+            AppSnackBar.showSnackBar(context, message: "${RegisterSnackBarMessages.registerFailed}: ${state.error}", type: SnackBarType.error);
           } else if (state is RegisterSuccess) {
-            AppSnackBar.showSnackBar(context, message: "Register successful", type: SnackBarType.success);
+            AppSnackBar.showSnackBar(context, message: RegisterSnackBarMessages.registerSuccess, type: SnackBarType.success);
             Navigator.pop(context);
           }
         },
       ),
     );
   }
+}
+class RegisterSnackBarMessages{
+  RegisterSnackBarMessages();
+  static const String registerFailed = "Register failed";
+  static const String registerSuccess = "Register successful";
+}
+class RegisterErrorMessages{
+  RegisterErrorMessages();
+  static const String nameEmpty = "Name cannot be empty";
+  static const String usernameEmpty = "Username cannot be empty";
+  static const String passwordEmpty = "Password cannot be empty";
+  static const String passwordLength = "Password must be at least 12 characters long";
+  static const String passwordLowercase = "Password must contain at least one lowercase letter";
+  static const String passwordUppercase = "Password must contain at least one uppercase letter";
+  static const String passwordNumber = "Password must contain at least one number";
+  static const String passwordSpecialCharacter = "Password must contain at least one special character";
+  static const String confirmPasswordEmpty = "Confirm Password cannot be empty";
+  static const String confirmPasswordNotMatch = "Confirm Password not match";
+  static const String emailEmpty = "Email cannot be empty";
+  static const String phoneEmpty = "Phone cannot be empty";
 }
