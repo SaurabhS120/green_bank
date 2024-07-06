@@ -1,0 +1,63 @@
+name: Build Android APK and Upload to App Center by version tag
+on:
+  push:
+    tags: # This section triggers the workflow on tag pushes (and creations)
+      - v[0-9]+.[0-9]+.[0-9]+  # Matches tags like v1.2.3 (optional: adjust the pattern)
+jobs:
+  build_android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.22.1
+
+      - name: Domain layer preparation
+        run: |
+          cd domain
+          flutter clean
+          flutter pub get
+          dart run build_runner build --delete-conflicting-outputs
+
+      - name: Data layer preparation
+        run: |
+          cd data
+          flutter clean
+          flutter pub get
+          dart run build_runner build --delete-conflicting-outputs
+
+      - name: Presentation layer preparation
+        run: |
+          flutter clean
+          flutter pub get
+
+      - name: Build apk
+        run: flutter build apk --release
+
+      - name: APK upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts.apk  # Include PR number in name
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+      - uses: actions/download-artifact@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 'v20.12.2'
+
+      - name: Update npm packages
+        run: |
+          npm install formidable@latest
+          npm install superagent@latest
+
+      - name: Install app center
+        run: npm install -g appcenter-cli
+
+      - name: Upload APK to App Center
+        run: appcenter distribute release -f build/app/outputs/flutter-apk/app-release.apk -a saurabh.sonar120-gmail.com/Green-Bank --group Public --token ${{secrets.APP_CENTER_TOKEN}}
