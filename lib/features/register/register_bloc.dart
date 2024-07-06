@@ -24,8 +24,34 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       if(event.username.isEmpty){
         validationErrorPrototype.usernameError = RegisterUsernameEmptyError();
       }
+
+      //At least 12 characters long but 14 or more is better.
+      //
+      // A combination of uppercase letters, lowercase letters, numbers, and symbols.
       if(event.password.isEmpty){
+        // password empty
         validationErrorPrototype.passwordError = RegisterPasswordEmptyError();
+      }else if(event.password.length < 12){
+        // password less than 12 characters
+        validationErrorPrototype.passwordError = RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.length);
+      }else if(!event.password.contains(RegExp(r'[0-9]'))){
+        // password without number
+        validationErrorPrototype.passwordError = RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.number);
+      }else if(event.password.length > 20){
+        // password more than 20 characters
+        validationErrorPrototype.passwordError = RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.length);
+      } else if(!event.password.contains(RegExp(r'[A-Za-z]'))){
+        // password without letter
+        validationErrorPrototype.passwordError = RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.lowercase);
+      } else if(!event.password.contains(RegExp(r'[A-Z]'))){
+        // password without uppercase letter
+        validationErrorPrototype.passwordError = RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.uppercase);
+      }else if(!event.password.contains(RegExp(r'[a-z]'))){
+        // password without lowercase letter
+        validationErrorPrototype.passwordError = RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.lowercase);
+      }else if(!event.password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))){
+        // password without special character
+        validationErrorPrototype.passwordError = RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.spacialCharacter);
       }
       if(event.confirmPassword.isEmpty){
         validationErrorPrototype.confirmPasswordError = RegisterConfirmPasswordEmptyError();
@@ -166,6 +192,17 @@ class RegisterPasswordNoError extends RegisterPasswordValidationError{
 }
 class RegisterPasswordEmptyError extends RegisterPasswordValidationError{
   RegisterPasswordEmptyError();
+}
+enum RegisterPasswordFormatErrorReason{
+  length,
+  lowercase,
+  uppercase,
+  number,
+  spacialCharacter,
+}
+class RegisterPasswordFormatError extends RegisterPasswordValidationError{
+  final RegisterPasswordFormatErrorReason reason;
+  RegisterPasswordFormatError({required this.reason});
 }
 //   final String confirmPassword;
 sealed class RegisterConfirmPasswordValidationError{

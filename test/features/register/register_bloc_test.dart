@@ -9,8 +9,8 @@ import 'register_bloc_test.mocks.dart';
 RegisterButtonPressed createDummyButtonPress({
   String name = 'test',
   String username = 'admin',
-  String password = 'admin',
-  String confirmPassword = 'admin',
+  String password = 'Password123!',
+  String confirmPassword = 'Password123!',
   String email = 'test@gmail.com',
   String phone = '0123456789',
 }){
@@ -70,6 +70,89 @@ void main(){
           expect(state.passwordError, isA<RegisterPasswordEmptyError>());
         }
       );
+      group('Password Format test', (){
+        //At least 12 characters long but 14 or more is better.
+        //
+        // A combination of uppercase letters, lowercase letters, numbers, and symbols.
+        blocTest("Password less than 12 characters test",
+          build: () => RegisterBloc(mockRegisterUsecase),
+          act: (bloc) => bloc.add(createDummyButtonPress(password: '12345'),),
+          expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
+          verify: (bloc) {
+            final state = bloc.state as RegisterValidationError;
+            expect(state.passwordError, isA<RegisterPasswordFormatError>());
+            var registerPasswordFormatError = state.passwordError as RegisterPasswordFormatError;
+            expect(registerPasswordFormatError.reason, RegisterPasswordFormatErrorReason.length);
+          }
+        );
+        blocTest("Password more than 20 characters test",
+          build: () => RegisterBloc(mockRegisterUsecase),
+          act: (bloc) => bloc.add(createDummyButtonPress(password: '123456789012345678901'),),
+          expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
+          verify: (bloc) {
+            final state = bloc.state as RegisterValidationError;
+            expect(state.passwordError, isA<RegisterPasswordFormatError>());
+            var registerPasswordFormatError = state.passwordError as RegisterPasswordFormatError;
+            expect(registerPasswordFormatError.reason, RegisterPasswordFormatErrorReason.length);
+          }
+        );
+        blocTest("Password without number test",
+          build: () => RegisterBloc(mockRegisterUsecase),
+          act: (bloc) => bloc.add(createDummyButtonPress(password: 'abcxyzpqrabc'),),
+          expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
+          verify: (bloc) {
+            final state = bloc.state as RegisterValidationError;
+            expect(state.passwordError, isA<RegisterPasswordFormatError>());
+            var registerPasswordFormatError = state.passwordError as RegisterPasswordFormatError;
+            expect(registerPasswordFormatError.reason, RegisterPasswordFormatErrorReason.number);
+          }
+        );
+        blocTest("Password without letter test",
+          build: () => RegisterBloc(mockRegisterUsecase),
+          act: (bloc) => bloc.add(createDummyButtonPress(password: '123456789012'),),
+          expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
+          verify: (bloc) {
+            final state = bloc.state as RegisterValidationError;
+            expect(state.passwordError, isA<RegisterPasswordFormatError>());
+            var registerPasswordFormatError = state.passwordError as RegisterPasswordFormatError;
+            expect(registerPasswordFormatError.reason, RegisterPasswordFormatErrorReason.lowercase);
+          }
+        );
+        blocTest("Password without uppercase letter test",
+          build: () => RegisterBloc(mockRegisterUsecase),
+          act: (bloc) => bloc.add(createDummyButtonPress(password: '123456abcdef'),),
+          expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
+          verify: (bloc) {
+            final state = bloc.state as RegisterValidationError;
+            expect(state.passwordError, isA<RegisterPasswordFormatError>());
+            var registerPasswordFormatError = state.passwordError as RegisterPasswordFormatError;
+            expect(registerPasswordFormatError.reason, RegisterPasswordFormatErrorReason.uppercase);
+          }
+        );
+        blocTest('Password without lowercase letter test',
+          build: () => RegisterBloc(mockRegisterUsecase),
+          act: (bloc) => bloc.add(createDummyButtonPress(password: '123456789ABC'),),
+          expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
+          verify: (bloc) {
+            final state = bloc.state as RegisterValidationError;
+            expect(state.passwordError, isA<RegisterPasswordFormatError>());
+            var registerPasswordFormatError = state.passwordError as RegisterPasswordFormatError;
+            expect(registerPasswordFormatError.reason, RegisterPasswordFormatErrorReason.lowercase);
+          }
+        );
+        blocTest("Password without special character test",
+          build: () => RegisterBloc(mockRegisterUsecase),
+          act: (bloc) => bloc.add(createDummyButtonPress(password: '123456AbcXyz'),),
+          expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
+          verify: (bloc) {
+            final state = bloc.state as RegisterValidationError;
+            expect(state.passwordError, isA<RegisterPasswordFormatError>());
+            var registerPasswordFormatError = state.passwordError as RegisterPasswordFormatError;
+            expect(registerPasswordFormatError.reason, RegisterPasswordFormatErrorReason.spacialCharacter);
+          }
+        );
+      });
+
       blocTest("Confirm password empty test",
         build: () => RegisterBloc(mockRegisterUsecase),
         act: (bloc) => bloc.add(createDummyButtonPress(confirmPassword: ''),),
