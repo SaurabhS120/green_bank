@@ -74,10 +74,28 @@ class RegisterPage extends StatelessWidget {
                         }
                       },
                       builder: (BuildContext context, RegisterPasswordValidationError? state) {
-                        if(state != null && state is RegisterPasswordEmptyError){
-                          return const Text("Password cannot be empty", style: TextStyle(color: Colors.red));
-                        }else{
-                          return const SizedBox();
+                        switch(state){
+                          case RegisterPasswordNoError():
+                            return const SizedBox();
+                          case RegisterPasswordEmptyError():
+                            return const Text("Password cannot be empty", style: TextStyle(color: Colors.red));
+                            case RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason reason):
+                              switch(reason){
+                                case RegisterPasswordFormatErrorReason.length:
+                                  return const Text("Password must be at least 12 characters long", style: TextStyle(color: Colors.red));
+                                case RegisterPasswordFormatErrorReason.lowercase:
+                                  return const Text("Password must contain at least one lowercase letter", style: TextStyle(color: Colors.red));
+                                case RegisterPasswordFormatErrorReason.uppercase:
+                                  return const Text("Password must contain at least one uppercase letter", style: TextStyle(color: Colors.red));
+                                case RegisterPasswordFormatErrorReason.number:
+                                  return const Text("Password must contain at least one number", style: TextStyle(color: Colors.red));
+                                case RegisterPasswordFormatErrorReason.spacialCharacter:
+                                  return const Text("Password must contain at least one special character", style: TextStyle(color: Colors.red));
+                                default:
+                                  return const SizedBox();
+                              }
+                          default:
+                            return const SizedBox();
                         }
                       },
                     ),
