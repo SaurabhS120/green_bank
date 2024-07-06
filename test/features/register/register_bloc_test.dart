@@ -6,6 +6,24 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'register_bloc_test.mocks.dart';
 
+RegisterButtonPressed createDummyButtonPress({
+  String name = 'test',
+  String username = 'admin',
+  String password = 'admin',
+  String confirmPassword = 'admin',
+  String email = 'test@gmail.com',
+  String phone = '0123456789',
+}){
+  return RegisterButtonPressed(
+    name: name,
+    username: username,
+    password: password,
+    confirmPassword: confirmPassword,
+    email: email,
+    phone: phone,
+  );
+}
+
 @GenerateNiceMocks([MockSpec<RegisterUsecase>()])
 void main(){
   MockRegisterUsecase mockRegisterUsecase = MockRegisterUsecase();
@@ -14,30 +32,20 @@ void main(){
       setUp: ()=>when(mockRegisterUsecase.execute(any)).thenAnswer((_) async => true),
       build: () => RegisterBloc(mockRegisterUsecase),
       act: (bloc) =>
-          bloc.add(RegisterButtonPressed(name: 'test',
-            username: 'admin',
-            password: 'admin',
-            confirmPassword: 'admin',
-            email: 'test@gmail.com',
-            phone: '1234567890',)),
+          bloc.add(createDummyButtonPress()),
       expect: () => [isA<RegisterLoading>(), isA<RegisterSuccess>()],
     );
     blocTest("Register Failure test",
       setUp: ()=>when(mockRegisterUsecase.execute(any)).thenAnswer((_) async => false),
       build: () => RegisterBloc(mockRegisterUsecase),
       act: (bloc) =>
-          bloc.add(RegisterButtonPressed(name: 'test',
-            username: 'admin',
-            password: 'admin',
-            confirmPassword: 'admin',
-            email: 'test@gmail.com',
-            phone: '1234567890',)),
+          bloc.add(createDummyButtonPress()),
       expect: () => [isA<RegisterLoading>(), isA<RegisterFailure>()],
     );
     group("Validation test", (){
       blocTest("Name empty test",
         build: () => RegisterBloc(mockRegisterUsecase),
-        act: (bloc) => bloc.add(RegisterButtonPressed(name: '',username: 'admin', password: 'admin', confirmPassword: 'admin', email: 'test@gmail.com', phone: '1234567890',),),
+        act: (bloc) => bloc.add(createDummyButtonPress(name: ''),),
         expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
         verify: (bloc) {
           final state = bloc.state as RegisterValidationError;
@@ -46,7 +54,7 @@ void main(){
       );
       blocTest("Username empty test",
         build: () => RegisterBloc(mockRegisterUsecase),
-        act: (bloc) => bloc.add(RegisterButtonPressed(name: 'test',username: '', password: 'admin', confirmPassword: 'admin', email: 'test@gmail.com', phone: '1234567890',),),
+        act: (bloc) => bloc.add(createDummyButtonPress(username: ''),),
         expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
         verify: (bloc) {
           final state = bloc.state as RegisterValidationError;
@@ -55,7 +63,7 @@ void main(){
       );
       blocTest("Password empty test",
         build: () => RegisterBloc(mockRegisterUsecase),
-        act: (bloc) => bloc.add(RegisterButtonPressed(name: 'test',username: 'admin', password: '', confirmPassword: 'admin', email: 'test@gmail.com', phone: '1234567890',),),
+        act: (bloc) => bloc.add(createDummyButtonPress(password: ''),),
         expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
         verify: (bloc) {
           final state = bloc.state as RegisterValidationError;
@@ -64,7 +72,7 @@ void main(){
       );
       blocTest("Confirm password empty test",
         build: () => RegisterBloc(mockRegisterUsecase),
-        act: (bloc) => bloc.add(RegisterButtonPressed(name: 'test',username: 'admin', password: 'admin', confirmPassword: '', email: 'test@gmail.com', phone: '1234567890',),),
+        act: (bloc) => bloc.add(createDummyButtonPress(confirmPassword: ''),),
         expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
         verify: (bloc) {
           final state = bloc.state as RegisterValidationError;
@@ -73,7 +81,7 @@ void main(){
       );
       blocTest("Email empty test",
         build: () => RegisterBloc(mockRegisterUsecase),
-        act: (bloc) => bloc.add(RegisterButtonPressed(name: 'test',username: 'admin', password: 'admin', confirmPassword: 'admin', email: '', phone: '1234567890',),),
+        act: (bloc) => bloc.add(createDummyButtonPress(email: ''),),
         expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
         verify: (bloc) {
           final state = bloc.state as RegisterValidationError;
@@ -82,7 +90,7 @@ void main(){
       );
       blocTest("Phone empty test",
         build: () => RegisterBloc(mockRegisterUsecase),
-        act: (bloc) => bloc.add(RegisterButtonPressed(name: 'test',username: 'admin', password: 'admin', confirmPassword: 'admin', email: 'test@gmail.com', phone: '',),),
+        act: (bloc) => bloc.add(createDummyButtonPress(phone: ''),),
         expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
         verify: (bloc) {
           final state = bloc.state as RegisterValidationError;
@@ -91,7 +99,7 @@ void main(){
       );
       blocTest("Confirm password not match test",
         build: () => RegisterBloc(mockRegisterUsecase),
-        act: (bloc) => bloc.add(RegisterButtonPressed(name: 'test',username: 'admin', password: 'admin', confirmPassword: 'admin1', email: 'test@gmail.com', phone: '1234567890',),),
+        act: (bloc) => bloc.add(createDummyButtonPress(password: 'admin',confirmPassword: 'fake'),),
         expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
         verify: (bloc) {
           final state = bloc.state as RegisterValidationError;
