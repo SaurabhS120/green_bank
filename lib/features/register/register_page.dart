@@ -24,141 +24,153 @@ class RegisterPage extends StatelessWidget {
                     FormTextField(
                       labelText: 'Name',
                       controller: context.read<RegisterBloc>().nameController,
-                    ),
-                    BlocSelector<RegisterBloc,RegisterState,RegisterNameValidationError?>(
-                      selector: (state) {
-                        if(state is RegisterValidationError){
-                          return state.nameError;
-                        }else{
-                          return null;
-                        }
-                      },
-                      builder: (BuildContext context, RegisterNameValidationError? state) {
-                        if(state != null && state is RegisterNameEmptyError){
-                          return const Text("Name cannot be empty", style: TextStyle(color: Colors.red));
-                        }else{
-                          return const SizedBox();
-                        }
+                      onErrorBuild: (BuildContext context){
+                        return BlocSelector<RegisterBloc,RegisterState,RegisterNameValidationError?>(
+                          selector: (state) {
+                            if(state is RegisterValidationError){
+                              return state.nameError;
+                            }else{
+                              return null;
+                            }
+                          },
+                          builder: (BuildContext context, RegisterNameValidationError? state) {
+                            if(state != null && state is RegisterNameEmptyError){
+                              return const AppFormFieldErrorText(errorText:"Name cannot be empty");
+                            }else{
+                              return const SizedBox();
+                            }
+                          },
+                        );
                       },
                     ),
                     FormTextField(
                       labelText: 'Username',
                       controller: context.read<RegisterBloc>().usernameController,
-                    ),
-                    BlocSelector<RegisterBloc,RegisterState,RegisterUsernameValidationError?>(
-                      selector: (state) {
-                        if(state is RegisterValidationError){
-                          return state.usernameError;
-                        }else{
-                          return null;
-                        }
-                      },
-                      builder: (BuildContext context, RegisterUsernameValidationError? state) {
-                        if(state != null && state is RegisterUsernameEmptyError){
-                          return const Text("Username cannot be empty", style: TextStyle(color: Colors.red));
-                        }else{
-                          return const SizedBox();
-                        }
+                      onErrorBuild: (BuildContext context) {
+                        return BlocSelector<RegisterBloc,RegisterState,RegisterUsernameValidationError?>(
+                          selector: (state) {
+                            if(state is RegisterValidationError){
+                              return state.usernameError;
+                            }else{
+                              return null;
+                            }
+                          },
+                          builder: (BuildContext context, RegisterUsernameValidationError? state) {
+                            if(state != null && state is RegisterUsernameEmptyError){
+                              return const AppFormFieldErrorText(errorText:"Username cannot be empty");
+                            }else{
+                              return const SizedBox();
+                            }
+                          },
+                        );
                       },
                     ),
                     FormTextField(
                       labelText: 'Password',
                       controller: context.read<RegisterBloc>().passwordController,
-                    ),
-                    BlocSelector<RegisterBloc,RegisterState,RegisterPasswordValidationError?>(
-                      selector: (state) {
-                        if(state is RegisterValidationError){
-                          return state.passwordError;
-                        }else{
-                          return null;
-                        }
-                      },
-                      builder: (BuildContext context, RegisterPasswordValidationError? state) {
-                        switch(state){
-                          case RegisterPasswordNoError():
-                            return const SizedBox();
-                          case RegisterPasswordEmptyError():
-                            return const Text("Password cannot be empty", style: TextStyle(color: Colors.red));
-                            case RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason reason):
-                              switch(reason){
-                                case RegisterPasswordFormatErrorReason.length:
-                                  return const Text("Password must be at least 12 characters long", style: TextStyle(color: Colors.red));
-                                case RegisterPasswordFormatErrorReason.lowercase:
-                                  return const Text("Password must contain at least one lowercase letter", style: TextStyle(color: Colors.red));
-                                case RegisterPasswordFormatErrorReason.uppercase:
-                                  return const Text("Password must contain at least one uppercase letter", style: TextStyle(color: Colors.red));
-                                case RegisterPasswordFormatErrorReason.number:
-                                  return const Text("Password must contain at least one number", style: TextStyle(color: Colors.red));
-                                case RegisterPasswordFormatErrorReason.spacialCharacter:
-                                  return const Text("Password must contain at least one special character", style: TextStyle(color: Colors.red));
-                                default:
-                                  return const SizedBox();
-                              }
-                          default:
-                            return const SizedBox();
-                        }
+                      onErrorBuild: (BuildContext context) {
+                        return BlocSelector<RegisterBloc,RegisterState,RegisterPasswordValidationError?>(
+                          selector: (state) {
+                            if(state is RegisterValidationError){
+                              return state.passwordError;
+                            }else{
+                              return null;
+                            }
+                          },
+                          builder: (BuildContext context, RegisterPasswordValidationError? state) {
+                            switch(state){
+                              case RegisterPasswordNoError():
+                                return const SizedBox();
+                              case RegisterPasswordEmptyError():
+                                return const AppFormFieldErrorText(errorText:"Password cannot be empty");
+                              case RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason reason):
+                                switch(reason){
+                                  case RegisterPasswordFormatErrorReason.length:
+                                    return const AppFormFieldErrorText(errorText:"Password must be at least 12 characters long");
+                                  case RegisterPasswordFormatErrorReason.lowercase:
+                                    return const AppFormFieldErrorText(errorText:"Password must contain at least one lowercase letter");
+                                  case RegisterPasswordFormatErrorReason.uppercase:
+                                    return const AppFormFieldErrorText(errorText:"Password must contain at least one uppercase letter");
+                                  case RegisterPasswordFormatErrorReason.number:
+                                    return const AppFormFieldErrorText(errorText:"Password must contain at least one number");
+                                  case RegisterPasswordFormatErrorReason.spacialCharacter:
+                                    return const AppFormFieldErrorText(errorText:"Password must contain at least one special character");
+                                  default:
+                                    return const SizedBox();
+                                }
+                              default:
+                                return const SizedBox();
+                            }
+                          },
+                        );
                       },
                     ),
                     FormTextField(
                       labelText: 'Confirm Password',
                       controller: context.read<RegisterBloc>().confirmPasswordController,
-                    ),
-                    BlocSelector<RegisterBloc,RegisterState,RegisterConfirmPasswordValidationError?>(
-                      selector: (state) {
-                        if(state is RegisterValidationError){
-                          return state.confirmPasswordError;
-                        }else{
-                          return null;
-                        }
-                      },
-                      builder: (BuildContext context, RegisterConfirmPasswordValidationError? state) {
-                        if(state != null && state is RegisterConfirmPasswordEmptyError){
-                          return const Text("Confirm Password cannot be empty", style: TextStyle(color: Colors.red));
-                        }else if(state != null && state is RegisterConfirmPasswordNotMatch){
-                          return const Text("Confirm Password not match", style: TextStyle(color: Colors.red));
-                        }else{
-                          return const SizedBox();
-                        }
+                      onErrorBuild: (BuildContext context) {
+                        return BlocSelector<RegisterBloc,RegisterState,RegisterConfirmPasswordValidationError?>(
+                          selector: (state) {
+                            if(state is RegisterValidationError){
+                              return state.confirmPasswordError;
+                            }else{
+                              return null;
+                            }
+                          },
+                          builder: (BuildContext context, RegisterConfirmPasswordValidationError? state) {
+                            if(state != null && state is RegisterConfirmPasswordEmptyError){
+                              return const AppFormFieldErrorText(errorText:"Confirm Password cannot be empty");
+                            }else if(state != null && state is RegisterConfirmPasswordNotMatch){
+                              return const AppFormFieldErrorText(errorText:"Confirm Password not match");
+                            }else{
+                              return const SizedBox();
+                            }
+                          },
+                        );
                       },
                     ),
                     FormTextField(
                       labelText: 'Email',
                       controller: context.read<RegisterBloc>().emailController,
-                    ),
-                    BlocSelector<RegisterBloc,RegisterState,RegisterEmailValidationError?>(
-                      selector: (state) {
-                        if(state is RegisterValidationError){
-                          return state.emailError;
-                        }else{
-                          return null;
-                        }
-                      },
-                      builder: (BuildContext context, RegisterEmailValidationError? state) {
-                        if(state != null && state is RegisterEmailEmptyError){
-                          return const Text("Email cannot be empty", style: TextStyle(color: Colors.red));
-                        }else{
-                          return const SizedBox();
-                        }
+                      onErrorBuild: (BuildContext context) {
+                        return BlocSelector<RegisterBloc,RegisterState,RegisterEmailValidationError?>(
+                          selector: (state) {
+                            if(state is RegisterValidationError){
+                              return state.emailError;
+                            }else{
+                              return null;
+                            }
+                          },
+                          builder: (BuildContext context, RegisterEmailValidationError? state) {
+                            if(state != null && state is RegisterEmailEmptyError){
+                              return const AppFormFieldErrorText(errorText:"Email cannot be empty");
+                            }else{
+                              return const SizedBox();
+                            }
+                          },
+                        );
                       },
                     ),
                     FormTextField(
                       labelText: 'Phone',
                       controller: context.read<RegisterBloc>().phoneController,
-                    ),
-                    BlocSelector<RegisterBloc,RegisterState,RegisterPhoneValidationError?>(
-                      selector: (state) {
-                        if(state is RegisterValidationError){
-                          return state.phoneError;
-                        }else{
-                          return null;
-                        }
-                      },
-                      builder: (BuildContext context, RegisterPhoneValidationError? state) {
-                        if(state != null && state is RegisterPhoneEmptyError){
-                          return const Text("Phone cannot be empty", style: TextStyle(color: Colors.red));
-                        }else{
-                          return const SizedBox();
-                        }
+                      onErrorBuild: (BuildContext context) {
+                        return BlocSelector<RegisterBloc,RegisterState,RegisterPhoneValidationError?>(
+                          selector: (state) {
+                            if(state is RegisterValidationError){
+                              return state.phoneError;
+                            }else{
+                              return null;
+                            }
+                          },
+                          builder: (BuildContext context, RegisterPhoneValidationError? state) {
+                            if(state != null && state is RegisterPhoneEmptyError){
+                              return const AppFormFieldErrorText(errorText:"Phone cannot be empty");
+                            }else{
+                              return const SizedBox();
+                            }
+                          },
+                        );
                       },
                     ),
                     FormButton(

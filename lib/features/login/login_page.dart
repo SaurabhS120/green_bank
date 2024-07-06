@@ -26,11 +26,17 @@ class LoginPage extends StatelessWidget{
                   key: const Key('usernameInput'),
                   labelText: 'Username',
                   controller: context.read<LoginBloc>().usernameController,
+                  onErrorBuild: (BuildContext context) {
+                    return const SizedBox();
+                  },
                 ),
                 FormTextField(
                   key: const Key('passwordInput'),
                   labelText: 'Password',
                   controller: context.read<LoginBloc>().passwordController,
+                  onErrorBuild: (BuildContext context) {
+                    return const SizedBox();
+                  },
                 ),
                 FormButton(
                   key: const Key('loginButton'),
