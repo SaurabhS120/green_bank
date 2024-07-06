@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:green_bank/ui/snackbar/app_snack_bar.dart';
 import 'package:green_bank/ui/snackbar/app_snack_bar_impl.dart';
 
+import 'app_snack_bar_test_helper.dart';
+
 void main() {
   group("Default Snack bar tests", (){
     group("Unit test", (){
@@ -50,11 +52,7 @@ void main() {
         );
         await tester.tap(find.byKey(targetKey));
         await tester.pumpAndSettle();
-        expect(find.byType(SnackBar), findsOneWidget);
-        Finder snackBarTitleFinder = find.byKey(const Key('snackBarTitle'));
-        expect(snackBarTitleFinder, findsOneWidget);
-        Text snackBarTitleText = tester.widget(snackBarTitleFinder);
-        expect(snackBarTitleText.data, title);
+        AppSnackBarTestHelper.verifySnackBarTitle(tester, titleStartsWith: title);
       });
       testWidgets("Warning Snack Bar Test", (WidgetTester tester) async {
         const Key targetKey = Key('showSnackBarButton');
@@ -80,11 +78,7 @@ void main() {
         );
         await tester.tap(find.byKey(targetKey));
         await tester.pumpAndSettle();
-        expect(find.byType(SnackBar), findsOneWidget);
-        Finder snackBarTitleFinder = find.byKey(const Key('snackBarTitle'));
-        expect(snackBarTitleFinder, findsOneWidget);
-        Text snackBarTitleText = tester.widget(snackBarTitleFinder);
-        expect(snackBarTitleText.data, title);
+        AppSnackBarTestHelper.verifySnackBarTitle(tester, titleStartsWith: title);
       });
       testWidgets("Error Snack Bar Test", (WidgetTester tester) async {
         const Key targetKey = Key('showSnackBarButton');
@@ -110,11 +104,7 @@ void main() {
         );
         await tester.tap(find.byKey(targetKey));
         await tester.pumpAndSettle();
-        expect(find.byType(SnackBar), findsOneWidget);
-        Finder snackBarTitleFinder = find.byKey(const Key('snackBarTitle'));
-        expect(snackBarTitleFinder, findsOneWidget);
-        Text snackBarTitleText = tester.widget(snackBarTitleFinder);
-        expect(snackBarTitleText.data, title);
+        AppSnackBarTestHelper.verifySnackBarTitle(tester, titleStartsWith: title);
       });
     });
   });

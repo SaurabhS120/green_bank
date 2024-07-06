@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -5,43 +6,43 @@ import 'package:green_bank/domain/usecase/login/login_dummy_usecase.dart';
 import 'package:green_bank/features/login/login_bloc.dart';
 import 'package:green_bank/features/login/login_page.dart';
 
+import '../../ui/snackbar/app_snack_bar_test_helper.dart';
+
+class LoginTestPage extends StatelessWidget{
+  const LoginTestPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: BlocProvider(
+        create: (context) => LoginBloc(LoginDummyUsecase()),
+        child: const LoginPage(),
+      ),
+    );
+  }
+}
+Future<void> enterLoginDetails(WidgetTester tester,
+    {required String username, required String password}) async {
+  await tester.enterText(find.byKey(const Key('usernameInput')), username);
+  await tester.enterText(find.byKey(const Key('passwordInput')), password);
+}
 void main(){
   TestWidgetsFlutterBinding.ensureInitialized();
   testWidgets('Login success test', (WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(
-      home: BlocProvider(
-        create: (context) => LoginBloc(LoginDummyUsecase()),
-        child: const LoginPage(),
-      ),
-    ));
-    await tester.enterText(find.byKey(const Key('usernameInput')), 'admin');
-    await tester.enterText(find.byKey(const Key('passwordInput')), 'admin');
+    await tester.pumpWidget(const LoginTestPage());
+    await enterLoginDetails(tester, username: 'admin', password: 'admin');
     await tester.tap(find.byKey(const Key('loginButton')));
     await tester.pump();
 
-    expect(find.byType(SnackBar), findsOneWidget);
-    final Finder snackBarTitleMatcher = find.byKey(const Key('snackBarTitle'));
-    expect(snackBarTitleMatcher, findsOneWidget);
-    final String snackBarTitleText = tester.widget<Text>(snackBarTitleMatcher).data!;
     const String startText = 'Login successful';
-    expect(snackBarTitleText.contains(startText), true, reason: "Snackbar title ($snackBarTitleText) should start with '$startText'");
+    AppSnackBarTestHelper.verifySnackBarTitle(tester, titleStartsWith: startText);
   });
   testWidgets('Login fail test', (WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(
-      home: BlocProvider(
-        create: (context) => LoginBloc(LoginDummyUsecase()),
-        child: const LoginPage(),
-      ),
-    ));
-    await tester.enterText(find.byKey(const Key('usernameInput')), 'fail');
-    await tester.enterText(find.byKey(const Key('passwordInput')), 'fail');
+    await tester.pumpWidget(const LoginTestPage());
+    await enterLoginDetails(tester, username: 'fail', password: 'fail');
     await tester.tap(find.byKey(const Key('loginButton')));
     await tester.pump();
-    expect(find.byType(SnackBar), findsOneWidget);
-    final Finder snackBarTitleMatcher = find.byKey(const Key('snackBarTitle'));
-    expect(snackBarTitleMatcher, findsOneWidget);
-    final String snackBarTitleText = tester.widget<Text>(snackBarTitleMatcher).data!;
     const String startText = 'Login failed:';
-    expect(snackBarTitleText.contains('Login failed:'), true, reason: "Snackbar title ($snackBarTitleText) should start with '$startText'");
+    AppSnackBarTestHelper.verifySnackBarTitle(tester, titleStartsWith: startText);
   });
 }
