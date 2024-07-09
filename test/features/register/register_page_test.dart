@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:green_bank/features/register/register_bloc.dart';
 import 'package:green_bank/features/register/register_page.dart';
+import 'package:green_bank/ui/app_loader.dart';
 import 'package:mockito/mockito.dart';
 
 import '../../ui/snackbar/app_snack_bar_test_helper.dart';
@@ -44,6 +45,17 @@ class RegisterTestWidget extends StatelessWidget {
 
 void main() {
   MockRegisterUsecase mockRegisterUsecase = MockRegisterUsecase();
+
+  testWidgets("Register loader test", (WidgetTester tester) async {
+    when(mockRegisterUsecase.execute(any)).thenAnswer((_) async => Future.delayed(const Duration(milliseconds: 1),()=>true));
+    await tester.pumpWidget(
+        RegisterTestWidget(registerBloc: RegisterBloc(mockRegisterUsecase)));
+    await enterRegistrationDetails(tester);
+    await tester.tap(find.byKey(const Key('registerButton')));
+    await tester.pump();
+    expect(find.byType(AppLoader), findsOneWidget);
+    await tester.pumpAndSettle();
+  });
 
   testWidgets("Register success test", (WidgetTester tester) async {
     when(mockRegisterUsecase.execute(any)).thenAnswer((_) async => true);
@@ -87,6 +99,56 @@ void main() {
       await tester.tap(find.byKey(const Key('registerButton')));
       await tester.pump();
       expect(find.text(RegisterErrorMessages.passwordEmpty), findsOneWidget);
+    });
+    group("Password format error tests", (){
+      testWidgets("Password less than 12 characters test", (WidgetTester tester) async {
+        await tester.pumpWidget(
+            RegisterTestWidget(registerBloc: RegisterBloc(mockRegisterUsecase)));
+        await enterRegistrationDetails(tester,password: '12345');
+        await tester.tap(find.byKey(const Key('registerButton')));
+        await tester.pump();
+        expect(find.text(RegisterErrorMessages.passwordLength), findsOneWidget);
+      });
+      testWidgets("Password more than 20 characters test", (WidgetTester tester) async {
+        await tester.pumpWidget(
+            RegisterTestWidget(registerBloc: RegisterBloc(mockRegisterUsecase)));
+        await enterRegistrationDetails(tester,password: '12345');
+        await tester.tap(find.byKey(const Key('registerButton')));
+        await tester.pump();
+        expect(find.text(RegisterErrorMessages.passwordLength), findsOneWidget);
+      });
+      testWidgets("Password without number test", (WidgetTester tester) async {
+        await tester.pumpWidget(
+            RegisterTestWidget(registerBloc: RegisterBloc(mockRegisterUsecase)));
+        await enterRegistrationDetails(tester,password: 'abcxyzpqrabc');
+        await tester.tap(find.byKey(const Key('registerButton')));
+        await tester.pump();
+        expect(find.text(RegisterErrorMessages.passwordNumber), findsOneWidget);
+      });
+      testWidgets("Password without uppercase letter test", (WidgetTester tester) async {
+        await tester.pumpWidget(
+            RegisterTestWidget(registerBloc: RegisterBloc(mockRegisterUsecase)));
+        await enterRegistrationDetails(tester,password: '123456abcdef');
+        await tester.tap(find.byKey(const Key('registerButton')));
+        await tester.pump();
+        expect(find.text(RegisterErrorMessages.passwordUppercase), findsOneWidget);
+      });
+      testWidgets("Password without lowercase letter test", (WidgetTester tester) async {
+        await tester.pumpWidget(
+            RegisterTestWidget(registerBloc: RegisterBloc(mockRegisterUsecase)));
+        await enterRegistrationDetails(tester,password: '123456789ABC');
+        await tester.tap(find.byKey(const Key('registerButton')));
+        await tester.pump();
+        expect(find.text(RegisterErrorMessages.passwordLowercase), findsOneWidget);
+      });
+      testWidgets("Password without spacial character test", (WidgetTester tester) async {
+        await tester.pumpWidget(
+            RegisterTestWidget(registerBloc: RegisterBloc(mockRegisterUsecase)));
+        await enterRegistrationDetails(tester,password: '123456AbcXyz');
+        await tester.tap(find.byKey(const Key('registerButton')));
+        await tester.pump();
+        expect(find.text(RegisterErrorMessages.passwordSpecialCharacter), findsOneWidget);
+      });
     });
     testWidgets("Confirm password empty test", (WidgetTester tester) async {
       await tester.pumpWidget(

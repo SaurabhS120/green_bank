@@ -36,7 +36,7 @@ class RegisterPage extends StatelessWidget {
                           },
                           builder: (BuildContext context, RegisterNameValidationError? state) {
                             if(state != null && state is RegisterNameEmptyError){
-                              return const AppFormFieldErrorText(errorText:"Name cannot be empty");
+                              return const AppFormFieldErrorText(errorText:RegisterErrorMessages.nameEmpty);
                             }else{
                               return const SizedBox();
                             }
@@ -216,12 +216,10 @@ class RegisterPage extends StatelessWidget {
   }
 }
 class RegisterSnackBarMessages{
-  RegisterSnackBarMessages();
   static const String registerFailed = "Register failed";
   static const String registerSuccess = "Register successful";
 }
 class RegisterErrorMessages{
-  RegisterErrorMessages();
   static const String nameEmpty = "Name cannot be empty";
   static const String usernameEmpty = "Username cannot be empty";
   static const String passwordEmpty = "Password cannot be empty";

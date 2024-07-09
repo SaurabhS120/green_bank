@@ -80,8 +80,8 @@ class RegisterBlocValidations{
     }else if(password.length > 20){
       // password more than 20 characters
       return RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.length);
-    } else if(!password.contains(RegExp(r'[A-Za-z]'))){
-      // password without letter
+    }else if(!password.contains(RegExp(r'[A-Za-z]'))){
+      // password without lowercase letter
       return RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.lowercase);
     } else if(!password.contains(RegExp(r'[A-Z]'))){
       // password without uppercase letter

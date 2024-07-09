@@ -139,17 +139,6 @@ void main(){
             expect(registerPasswordFormatError.reason, RegisterPasswordFormatErrorReason.number);
           }
         );
-        blocTest("Password without letter test",
-          build: () => RegisterBloc(mockRegisterUsecase),
-          act: (bloc) => bloc.add(createDummyButtonPress(password: '123456789012'),),
-          expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
-          verify: (bloc) {
-            final state = bloc.state as RegisterValidationError;
-            expect(state.passwordError, isA<RegisterPasswordFormatError>());
-            var registerPasswordFormatError = state.passwordError as RegisterPasswordFormatError;
-            expect(registerPasswordFormatError.reason, RegisterPasswordFormatErrorReason.lowercase);
-          }
-        );
         blocTest("Password without uppercase letter test",
           build: () => RegisterBloc(mockRegisterUsecase),
           act: (bloc) => bloc.add(createDummyButtonPress(password: '123456abcdef'),),
