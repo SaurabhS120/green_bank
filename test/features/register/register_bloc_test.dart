@@ -28,6 +28,9 @@ RegisterButtonPressed createDummyButtonPress({
 void main(){
   MockRegisterUsecase mockRegisterUsecase = MockRegisterUsecase();
   group("Register bloc test", (){
+    test("Register initial state test",(){
+      expect(const RegisterInitial(), equals(const RegisterInitial()));
+    });
     blocTest("Register success test",
       setUp: ()=>when(mockRegisterUsecase.execute(any)).thenAnswer((_) async => true),
       build: () => RegisterBloc(mockRegisterUsecase),

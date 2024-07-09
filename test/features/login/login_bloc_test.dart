@@ -5,6 +5,9 @@ import 'package:green_bank/features/login/login_bloc.dart';
 
 void main(){
   group('LoginBloc', (){
+    test("Initial state equality test", (){
+      expect(LoginInitial(),equals(LoginInitial()));
+    });
     blocTest("Login success test",
         build: () => LoginBloc(LoginDummyUsecase()),
         act: (bloc) => bloc.add(LoginButtonPressed(username: 'admin', password: 'admin')),
@@ -16,4 +19,13 @@ void main(){
       expect: () => [isA<LoginLoading>(), isA<LoginFailure>()],
     );
   });
+  blocTest("Login bloc login method test",
+    build: () => LoginBloc(LoginDummyUsecase()),
+    act: (bloc) {
+      bloc.usernameController.text = 'admin';
+      bloc.passwordController.text = 'admin';
+      bloc.login();
+    },
+    expect: () => [isA<LoginLoading>(), isA<LoginSuccess>()],
+  );
 }
