@@ -18,41 +18,12 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     on<RegisterButtonPressed>((event, emit) async {
       emit(const RegisterLoading());
       final validationErrorPrototype = RegisterValidationErrorPrototype();
-      if(event.name.isEmpty){
-        validationErrorPrototype.nameError = RegisterNameEmptyError();
-      }
+      validationErrorPrototype.nameError = RegisterBlocValidations.validateName(event.name);
       if(event.username.isEmpty){
         validationErrorPrototype.usernameError = RegisterUsernameEmptyError();
       }
 
-      //At least 12 characters long but 14 or more is better.
-      //
-      // A combination of uppercase letters, lowercase letters, numbers, and symbols.
-      if(event.password.isEmpty){
-        // password empty
-        validationErrorPrototype.passwordError = RegisterPasswordEmptyError();
-      }else if(event.password.length < 12){
-        // password less than 12 characters
-        validationErrorPrototype.passwordError = RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.length);
-      }else if(!event.password.contains(RegExp(r'[0-9]'))){
-        // password without number
-        validationErrorPrototype.passwordError = RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.number);
-      }else if(event.password.length > 20){
-        // password more than 20 characters
-        validationErrorPrototype.passwordError = RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.length);
-      } else if(!event.password.contains(RegExp(r'[A-Za-z]'))){
-        // password without letter
-        validationErrorPrototype.passwordError = RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.lowercase);
-      } else if(!event.password.contains(RegExp(r'[A-Z]'))){
-        // password without uppercase letter
-        validationErrorPrototype.passwordError = RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.uppercase);
-      }else if(!event.password.contains(RegExp(r'[a-z]'))){
-        // password without lowercase letter
-        validationErrorPrototype.passwordError = RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.lowercase);
-      }else if(!event.password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))){
-        // password without special character
-        validationErrorPrototype.passwordError = RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.spacialCharacter);
-      }
+      validationErrorPrototype.passwordError = RegisterBlocValidations.validatePassword(event.password);
       if(event.confirmPassword.isEmpty){
         validationErrorPrototype.confirmPasswordError = RegisterConfirmPasswordEmptyError();
       }else if(event.password != event.confirmPassword){
@@ -79,6 +50,52 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   }
 }
 
+class RegisterBlocValidations{
+  static RegisterNameValidationError validateName(String name){
+    if(name.isEmpty){
+      return RegisterNameEmptyError();
+    }else if (RegExp(r'\d').hasMatch(name)){
+      return RegisterNameShouldNotContainDigitError();
+    }else if (RegExp(r'''[!@#\$%\^&\*\(\)_\+\-=\{\}\[\]\|\\:;\"'<>,\.\?/~`]''').hasMatch(name)){
+      return RegisterNameShouldNotContainSpecialCharacterError();
+    } else if(!RegExp(r'^[a-zA-Z\s]+$').hasMatch(name)){
+      return RegisterNameFormatError();
+    }
+    return RegisterNameNoError();
+  }
+
+  static RegisterPasswordValidationError validatePassword(String password) {
+    //At least 12 characters long but 14 or more is better.
+    //
+    // A combination of uppercase letters, lowercase letters, numbers, and symbols.
+    if(password.isEmpty){
+      // password empty
+      return RegisterPasswordEmptyError();
+    }else if(password.length < 12){
+      // password less than 12 characters
+      return RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.length);
+    }else if(!password.contains(RegExp(r'[0-9]'))){
+      // password without number
+      return RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.number);
+    }else if(password.length > 20){
+      // password more than 20 characters
+      return RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.length);
+    } else if(!password.contains(RegExp(r'[A-Za-z]'))){
+      // password without letter
+      return RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.lowercase);
+    } else if(!password.contains(RegExp(r'[A-Z]'))){
+      // password without uppercase letter
+      return RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.uppercase);
+    }else if(!password.contains(RegExp(r'[a-z]'))){
+      // password without lowercase letter
+      return RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.lowercase);
+    }else if(!password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))){
+      // password without special character
+      return RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.spacialCharacter);
+    }
+    return RegisterPasswordNoError();
+  }
+}
 sealed class RegisterState extends Equatable{
   const RegisterState();
 }
@@ -172,6 +189,15 @@ class RegisterNameNoError extends RegisterNameValidationError{
 }
 class RegisterNameEmptyError extends RegisterNameValidationError{
   RegisterNameEmptyError();
+}
+class RegisterNameFormatError extends RegisterNameValidationError{
+  RegisterNameFormatError();
+}
+class RegisterNameShouldNotContainDigitError extends RegisterNameFormatError{
+  RegisterNameShouldNotContainDigitError();
+}
+class RegisterNameShouldNotContainSpecialCharacterError extends RegisterNameFormatError{
+  RegisterNameShouldNotContainSpecialCharacterError();
 }
 //   final String username;
 sealed class RegisterUsernameValidationError{

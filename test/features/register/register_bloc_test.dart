@@ -43,15 +43,83 @@ void main(){
       expect: () => [isA<RegisterLoading>(), isA<RegisterFailure>()],
     );
     group("Validation test", (){
-      blocTest("Name empty test",
-        build: () => RegisterBloc(mockRegisterUsecase),
-        act: (bloc) => bloc.add(createDummyButtonPress(name: ''),),
-        expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
-        verify: (bloc) {
-          final state = bloc.state as RegisterValidationError;
-          expect(state.nameError, isA<RegisterNameEmptyError>());
+      group("Name validation BLoC", (){
+        blocTest("Name empty test",
+            build: () => RegisterBloc(mockRegisterUsecase),
+            act: (bloc) => bloc.add(createDummyButtonPress(name: ''),),
+            expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
+            verify: (bloc) {
+              final state = bloc.state as RegisterValidationError;
+              expect(state.nameError, isA<RegisterNameEmptyError>());
+            }
+        );
+        blocTest("Name validation error test",
+            build: () => RegisterBloc(mockRegisterUsecase),
+            act: (bloc) => bloc.add(createDummyButtonPress(name: '1234abc%'),),
+            expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
+            verify: (bloc) {
+              final state = bloc.state as RegisterValidationError;
+              expect(state.nameError, isA<RegisterNameFormatError>(),
+                  reason: "There should be error for name validation");
+            }
+        );
+        blocTest("Name should not contain number test",
+            build: () => RegisterBloc(mockRegisterUsecase),
+            act: (bloc) => bloc.add(createDummyButtonPress(name: '1234abc'),),
+            expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
+            verify: (bloc) {
+              final state = bloc.state as RegisterValidationError;
+              expect(state.nameError, isA<RegisterNameShouldNotContainDigitError>(),
+                  reason: "There should be error for name representing Name should not contain digits");
+            }
+        );
+        List<String> namesWithSpecialCharacters = [
+          "Alice!",
+          "Bob@",
+          "Charlie#",
+          "David\$",
+          "Eve%",
+          "Frank^",
+          "Grace&",
+          "Hannah*",
+          "Ian(",
+          "Jack)",
+          "Karen-",
+          "Leo_",
+          "Mia+",
+          "Nick=",
+          "Olivia{",
+          "Paul}",
+          "Quincy[",
+          "Rachel]",
+          "Steve|",
+          "Tina\\",
+          "Uma:",
+          "Victor;",
+          "Wendy\"",
+          "Xander'",
+          "Yara<",
+          "Zack>",
+          "Ana,",
+          "Brian.",
+          "Cindy?",
+          "Dylan/",
+          "Erica~",
+          "Fred`",
+        ];
+        for (var name in namesWithSpecialCharacters) {
+          blocTest("Name should not contain special characters error test : $name",
+              build: () => RegisterBloc(mockRegisterUsecase),
+              act: (bloc) => bloc.add(createDummyButtonPress(name: name),),
+              expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
+              verify: (bloc) {
+                final state = bloc.state as RegisterValidationError;
+                expect(state.nameError, isA<RegisterNameShouldNotContainSpecialCharacterError>(),
+                    reason: "There should be special character error for name validation : $name");
+              }
+          );
         }
-      );
+      });
       blocTest("Username empty test",
         build: () => RegisterBloc(mockRegisterUsecase),
         act: (bloc) => bloc.add(createDummyButtonPress(username: ''),),
