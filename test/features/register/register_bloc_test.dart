@@ -73,52 +73,54 @@ void main(){
                   reason: "There should be error for name representing Name should not contain digits");
             }
         );
-        List<String> namesWithSpecialCharacters = [
-          "Alice!",
-          "Bob@",
-          "Charlie#",
-          "David\$",
-          "Eve%",
-          "Frank^",
-          "Grace&",
-          "Hannah*",
-          "Ian(",
-          "Jack)",
-          "Karen-",
-          "Leo_",
-          "Mia+",
-          "Nick=",
-          "Olivia{",
-          "Paul}",
-          "Quincy[",
-          "Rachel]",
-          "Steve|",
-          "Tina\\",
-          "Uma:",
-          "Victor;",
-          "Wendy\"",
-          "Xander'",
-          "Yara<",
-          "Zack>",
-          "Ana,",
-          "Brian.",
-          "Cindy?",
-          "Dylan/",
-          "Erica~",
-          "Fred`",
-        ];
-        for (var name in namesWithSpecialCharacters) {
-          blocTest("Name should not contain special characters error test : $name",
-              build: () => RegisterBloc(mockRegisterUsecase),
-              act: (bloc) => bloc.add(createDummyButtonPress(name: name),),
-              expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
-              verify: (bloc) {
-                final state = bloc.state as RegisterValidationError;
-                expect(state.nameError, isA<RegisterNameShouldNotContainSpecialCharacterError>(),
-                    reason: "There should be special character error for name validation : $name");
-              }
-          );
-        }
+        group("Name Special Character test", (){
+          List<String> namesWithSpecialCharacters = [
+            "Alice!",
+            "Bob@",
+            "Charlie#",
+            "David\$",
+            "Eve%",
+            "Frank^",
+            "Grace&",
+            "Hannah*",
+            "Ian(",
+            "Jack)",
+            "Karen-",
+            "Leo_",
+            "Mia+",
+            "Nick=",
+            "Olivia{",
+            "Paul}",
+            "Quincy[",
+            "Rachel]",
+            "Steve|",
+            "Tina\\",
+            "Uma:",
+            "Victor;",
+            "Wendy\"",
+            "Xander'",
+            "Yara<",
+            "Zack>",
+            "Ana,",
+            "Brian.",
+            "Cindy?",
+            "Dylan/",
+            "Erica~",
+            "Fred`",
+          ];
+          for (var name in namesWithSpecialCharacters) {
+            blocTest("Name should not contain special characters error test : $name",
+                build: () => RegisterBloc(mockRegisterUsecase),
+                act: (bloc) => bloc.add(createDummyButtonPress(name: name),),
+                expect: () => [isA<RegisterLoading>(), isA<RegisterValidationError>()],
+                verify: (bloc) {
+                  final state = bloc.state as RegisterValidationError;
+                  expect(state.nameError, isA<RegisterNameShouldNotContainSpecialCharacterError>(),
+                      reason: "There should be special character error for name validation : $name");
+                }
+            );
+          }
+        });
       });
       blocTest("Username empty test",
         build: () => RegisterBloc(mockRegisterUsecase),
