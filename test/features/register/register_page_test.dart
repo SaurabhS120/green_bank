@@ -76,13 +76,31 @@ void main() {
     AppSnackBarTestHelper.verifySnackBarTitle(tester, titleStartsWith: RegisterSnackBarMessages.registerFailed);
   });
   group('Validation testing', () {
-    testWidgets("Name empty test", (WidgetTester tester) async {
-      await tester.pumpWidget(
-          RegisterTestWidget(registerBloc: RegisterBloc(mockRegisterUsecase)));
-      await enterRegistrationDetails(tester,name: '');
-      await tester.tap(find.byKey(const Key('registerButton')));
-      await tester.pump();
-      expect(find.text(RegisterErrorMessages.nameEmpty), findsOneWidget);
+    group("Name validation", (){
+      testWidgets("Name empty test", (WidgetTester tester) async {
+        await tester.pumpWidget(
+            RegisterTestWidget(registerBloc: RegisterBloc(mockRegisterUsecase)));
+        await enterRegistrationDetails(tester,name: '');
+        await tester.tap(find.byKey(const Key('registerButton')));
+        await tester.pump();
+        expect(find.text(RegisterErrorMessages.nameEmpty), findsOneWidget);
+      });
+      testWidgets("Name with numbers error test", (WidgetTester tester) async {
+        await tester.pumpWidget(
+            RegisterTestWidget(registerBloc: RegisterBloc(mockRegisterUsecase)));
+        await enterRegistrationDetails(tester,name: 'abc123');
+        await tester.tap(find.byKey(const Key('registerButton')));
+        await tester.pump();
+        expect(find.text(RegisterErrorMessages.nameWithDigitError), findsOneWidget);
+      });
+      testWidgets("Name with spacial character error test", (WidgetTester tester) async {
+        await tester.pumpWidget(
+            RegisterTestWidget(registerBloc: RegisterBloc(mockRegisterUsecase)));
+        await enterRegistrationDetails(tester,name: 'abc!');
+        await tester.tap(find.byKey(const Key('registerButton')));
+        await tester.pump();
+        expect(find.text(RegisterErrorMessages.nameWithSpecialCharacterError), findsOneWidget);
+      });
     });
     testWidgets("Username empty test", (WidgetTester tester) async {
       await tester.pumpWidget(

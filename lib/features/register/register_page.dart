@@ -35,11 +35,24 @@ class RegisterPage extends StatelessWidget {
                             }
                           },
                           builder: (BuildContext context, RegisterNameValidationError? state) {
-                            if(state != null && state is RegisterNameEmptyError){
-                              return const AppFormFieldErrorText(errorText:RegisterErrorMessages.nameEmpty);
-                            }else{
-                              return const SizedBox();
-                            }
+                           switch(state){
+                             case null:
+                               return const SizedBox();
+                             case RegisterNameNoError():
+                               return const SizedBox();
+                             case RegisterNameEmptyError():
+                               return const AppFormFieldErrorText(errorText: RegisterErrorMessages.nameEmpty);
+                             case RegisterNameFormatError error:
+                               switch(error){
+                                 case RegisterNameShouldNotContainDigitError():
+                                   return const AppFormFieldErrorText(errorText: RegisterErrorMessages.nameWithDigitError);
+                                 case RegisterNameShouldNotContainSpecialCharacterError():
+                                   return const AppFormFieldErrorText(errorText: RegisterErrorMessages.nameWithSpecialCharacterError);
+                                 default:
+                                   return const AppFormFieldErrorText(errorText: RegisterErrorMessages.nameValidationError);
+
+                               }
+                           }
                           },
                         );
                       },
@@ -221,6 +234,9 @@ class RegisterSnackBarMessages{
 }
 class RegisterErrorMessages{
   static const String nameEmpty = "Name cannot be empty";
+  static const String nameValidationError = "Name format error";
+  static const String nameWithDigitError = "Name should not contain numbers";
+  static const String nameWithSpecialCharacterError = "Name should not contain spacial character";
   static const String usernameEmpty = "Username cannot be empty";
   static const String passwordEmpty = "Password cannot be empty";
   static const String passwordLength = "Password must be at least 12 characters long";
