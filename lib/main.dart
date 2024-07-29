@@ -46,7 +46,6 @@ class MyApp extends StatelessWidget {
             BlocProvider<UserDetailsBloc>(
               create: (context){
                 final bloc = UserDetailsBloc(getUserDetailsUsecase:context.read<GetUserDetailsUsecase>());
-                bloc.add(FetchUserDetailsBlocEvent());
                 return bloc;
               },
             ),

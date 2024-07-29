@@ -39,4 +39,18 @@ void main(){
         expect(bloc.state, isA<UserDetailsInitialBlocState>());
       }
   );
+  blocTest( "User details bloc logout test" ,
+      setUp: (){
+        mockGetUserDetailsUsecase= MockGetUserDetailsUsecase();
+        when(mockGetUserDetailsUsecase.execute()).thenAnswer((params)=>Future.value(const UserDetailsModel(name: "admin")));
+      },
+      build: () => UserDetailsBloc(getUserDetailsUsecase: mockGetUserDetailsUsecase),
+      act: (bloc){
+        bloc.add(FetchUserDetailsBlocEvent());
+        bloc.add(LogoutUserDetailsBlocEvent());
+      },
+      verify: (bloc){
+        expect(bloc.state, isA<UserDetailsInitialBlocState>());
+      }
+  );
 }

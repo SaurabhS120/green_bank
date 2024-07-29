@@ -7,10 +7,13 @@ class UserDetailsBloc extends Bloc<UserDetailsBlocEvent,UserDetailsBlocState>{
   final GetUserDetailsUsecase getUserDetailsUsecase;
 
   UserDetailsBloc({required this.getUserDetailsUsecase}):super(UserDetailsInitialBlocState()){
-    on<UserDetailsBlocEvent>((event,emit)async{
+    on<FetchUserDetailsBlocEvent>((event,emit)async{
       emit(UserDetailsLoadingBlocState());
       final result = await getUserDetailsUsecase.execute();
       emit(UserDetailsSuccessBlocState(name: result.name));
+    });
+    on<LogoutUserDetailsBlocEvent>((event,emit) async {
+      emit(UserDetailsInitialBlocState());
     });
   }
 
@@ -50,6 +53,10 @@ abstract class UserDetailsBlocEvent{
 }
 /// Event to fetch user details from backend
 class FetchUserDetailsBlocEvent extends UserDetailsBlocEvent{
+
+}
+/// Logout user
+class LogoutUserDetailsBlocEvent extends UserDetailsBlocEvent{
 
 }
 // ---------------Events---------------
