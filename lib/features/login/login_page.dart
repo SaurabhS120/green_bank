@@ -62,6 +62,7 @@ class LoginPage extends StatelessWidget{
               break;
             case LoginSuccess _:
               AppSnackBar.showSnackBar(context,message: "Login successful", type: SnackBarType.success);
+              Navigator.of(context).pushNamed('/dashboard');
               break;
             default:
               break;

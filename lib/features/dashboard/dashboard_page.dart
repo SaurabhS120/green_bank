@@ -14,18 +14,18 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          BlocBuilder<UserDetailsBloc,UserDetailsBlocState>(
-              builder: (context,state){
-                String name = "User";
-                if(state is UserDetailsSuccessBlocState){
-                  name = state.name;
-                }
-                return Text(key: const Key("user-greet"),"Hello,$name");
+      appBar:
+      AppBar(
+        backgroundColor: Colors.green,
+        title: BlocBuilder<UserDetailsBloc,UserDetailsBlocState>(
+            builder: (context,state){
+              String name = "User";
+              if(state is UserDetailsSuccessBlocState){
+                name = state.name;
               }
-          )
-        ],
+              return Text(key: const Key("user-greet"),"Hello, $name");
+            }
+        ),
       ),
     );
   }

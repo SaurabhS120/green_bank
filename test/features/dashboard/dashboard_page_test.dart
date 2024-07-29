@@ -43,6 +43,6 @@ void main(){
     expect(find.byKey(userGreetKey),findsOneWidget);
     expect(tester.widget(find.byKey(userGreetKey)),isA<Text>());
     final userGreetWidget = tester.widget<Text>(find.byKey(userGreetKey));
-    expect(userGreetWidget.data,"Hello,admin");
+    expect(userGreetWidget.data,"Hello, admin");
   });
 }
