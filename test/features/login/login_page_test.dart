@@ -20,6 +20,9 @@ class LoginTestPage extends StatelessWidget{
         create: (context) => LoginBloc(LoginDummyUsecase()),
         child: const LoginPage(),
       ),
+      routes: {
+        '/dashboard':(BuildContext context)=>const SizedBox(),
+      },
     );
   }
 }class LoginTestPageWithLoader extends StatelessWidget{
@@ -32,6 +35,9 @@ class LoginTestPage extends StatelessWidget{
         create: (context) => LoginBloc(LoginDummyLoaderUsecase()),
         child: const LoginPage(),
       ),
+      routes: {
+        '/dashboard':(BuildContext context)=>const SizedBox(),
+      },
     );
   }
 }
