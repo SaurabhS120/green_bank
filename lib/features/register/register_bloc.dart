@@ -3,6 +3,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:green_bank/domain/model/register_request_model.dart';
 import 'package:green_bank/domain/usecase/register/register_usecase.dart';
+import 'package:green_bank/features/register/validation/confirm_password_validation.dart';
+import 'package:green_bank/features/register/validation/email_validation.dart';
+import 'package:green_bank/features/register/validation/name_validation.dart';
+import 'package:green_bank/features/register/validation/password_validation.dart';
+import 'package:green_bank/features/register/validation/phone_validation.dart';
+import 'package:green_bank/features/register/validation/user_name_validation.dart';
+import 'package:green_bank/features/register/validation/validation_controller.dart';
 
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   final RegisterUsecase registerUsecase;
@@ -17,28 +24,67 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   RegisterBloc(this.registerUsecase) : super(const RegisterInitial()){
     on<RegisterButtonPressed>((event, emit) async {
       emit(const RegisterLoading());
-      final validationErrorPrototype = RegisterValidationErrorPrototype();
-      validationErrorPrototype.nameError = RegisterBlocValidations.validateName(event.name);
-      if(event.username.isEmpty){
-        validationErrorPrototype.usernameError = RegisterUsernameEmptyError();
-      }
-
-      validationErrorPrototype.passwordError = RegisterBlocValidations.validatePassword(event.password);
-      if(event.confirmPassword.isEmpty){
-        validationErrorPrototype.confirmPasswordError = RegisterConfirmPasswordEmptyError();
-      }else if(event.password != event.confirmPassword){
-        validationErrorPrototype.confirmPasswordError = RegisterConfirmPasswordNotMatch();
-      }
-      if(event.email.isEmpty){
-        validationErrorPrototype.emailError = RegisterEmailEmptyError();
-      }
-      if(event.phone.isEmpty){
-        validationErrorPrototype.phoneError = RegisterPhoneEmptyError();
-      }
-      RegisterValidationError validationError = validationErrorPrototype.build();
-
+      final RegisterValidationController registerValidationController = RegisterValidationController.create();
+      var validationError = registerValidationController.validate(name: event.name, userName: event.username, password: event.password, confirmPassword: event.confirmPassword, email: event.email, phone: event.phone);
       if(validationError.hasError()) {
-        emit(validationError);
+        RegisterValidationErrorPrototype prototype = RegisterValidationErrorPrototype();
+        switch(validationError.nameError.reason){
+          case RegisterValidationNameErrorReason.none:
+            prototype.nameError = RegisterNameNoError();
+          case RegisterValidationNameErrorReason.empty:
+            prototype.nameError = RegisterNameEmptyError();
+          case RegisterValidationNameErrorReason.number:
+            prototype.nameError = RegisterNameShouldNotContainDigitError();
+          case RegisterValidationNameErrorReason.spacialCharacter:
+            prototype.nameError = RegisterNameShouldNotContainSpecialCharacterError();
+          case RegisterValidationNameErrorReason.format:
+            prototype.nameError = RegisterNameFormatError();
+        }
+        switch(validationError.userNameError.reason){
+          case RegisterValidationUserNameErrorReason.none:
+            prototype.usernameError = RegisterUsernameNoError();
+          case RegisterValidationUserNameErrorReason.empty:
+            prototype.usernameError = RegisterUsernameEmptyError();
+        }
+        switch(validationError.passwordError.reason){
+          case RegisterValidationPasswordErrorReason.none:
+            prototype.passwordError = RegisterPasswordNoError();
+          case RegisterValidationPasswordErrorReason.empty:
+            prototype.passwordError = RegisterPasswordEmptyError();
+          case RegisterValidationPasswordErrorReason.length:
+            prototype.passwordError = RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.length);
+          case RegisterValidationPasswordErrorReason.number:
+            prototype.passwordError = RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.number);
+          case RegisterValidationPasswordErrorReason.lowercase:
+            prototype.passwordError = RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.lowercase);
+          case RegisterValidationPasswordErrorReason.uppercase:
+            prototype.passwordError = RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.uppercase);
+          case RegisterValidationPasswordErrorReason.character:
+            prototype.passwordError = RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.lowercase);
+          case RegisterValidationPasswordErrorReason.spacialCharacter:
+            prototype.passwordError = RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.spacialCharacter);
+        }
+        switch(validationError.confirmPasswordError.reason){
+          case RegisterValidationConfirmPasswordErrorReason.none:
+            prototype.confirmPasswordError = RegisterConfirmPasswordNoError();
+          case RegisterValidationConfirmPasswordErrorReason.empty:
+            prototype.confirmPasswordError = RegisterConfirmPasswordEmptyError();
+          case RegisterValidationConfirmPasswordErrorReason.noMatch:
+            prototype.confirmPasswordError = RegisterConfirmPasswordNotMatch();
+        }
+        switch(validationError.emailError.reason){
+          case RegisterValidationEmailErrorReason.none:
+            prototype.emailError = RegisterEmailNoError();
+          case RegisterValidationEmailErrorReason.empty:
+            prototype.emailError = RegisterEmailEmptyError();
+        }
+        switch(validationError.phoneError.reason){
+          case RegisterValidationPhoneErrorReason.none:
+            prototype.phoneError = RegisterPhoneNoError();
+          case RegisterValidationPhoneErrorReason.empty:
+            prototype.phoneError = RegisterPhoneEmptyError();
+        }
+        emit(prototype.build());
       }else{
         if (await registerUsecase.execute(event.toRequestModel())) {
           emit(const RegisterSuccess());
@@ -47,53 +93,6 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         }
       }
     });
-  }
-}
-
-class RegisterBlocValidations{
-  static RegisterNameValidationError validateName(String name){
-    if(name.isEmpty){
-      return RegisterNameEmptyError();
-    }else if (RegExp(r'\d').hasMatch(name)){
-      return RegisterNameShouldNotContainDigitError();
-    }else if (RegExp(r'''[!@#\$%\^&\*\(\)_\+\-=\{\}\[\]\|\\:;\"'<>,\.\?/~`]''').hasMatch(name)){
-      return RegisterNameShouldNotContainSpecialCharacterError();
-    } else if(!RegExp(r'^[a-zA-Z\s]+$').hasMatch(name)){
-      return RegisterNameFormatError();
-    }
-    return RegisterNameNoError();
-  }
-
-  static RegisterPasswordValidationError validatePassword(String password) {
-    //At least 12 characters long but 14 or more is better.
-    //
-    // A combination of uppercase letters, lowercase letters, numbers, and symbols.
-    if(password.isEmpty){
-      // password empty
-      return RegisterPasswordEmptyError();
-    }else if(password.length < 12){
-      // password less than 12 characters
-      return RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.length);
-    }else if(!password.contains(RegExp(r'[0-9]'))){
-      // password without number
-      return RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.number);
-    }else if(password.length > 20){
-      // password more than 20 characters
-      return RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.length);
-    }else if(!password.contains(RegExp(r'[A-Za-z]'))){
-      // password without lowercase letter
-      return RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.lowercase);
-    } else if(!password.contains(RegExp(r'[A-Z]'))){
-      // password without uppercase letter
-      return RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.uppercase);
-    }else if(!password.contains(RegExp(r'[a-z]'))){
-      // password without lowercase letter
-      return RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.lowercase);
-    }else if(!password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))){
-      // password without special character
-      return RegisterPasswordFormatError(reason: RegisterPasswordFormatErrorReason.spacialCharacter);
-    }
-    return RegisterPasswordNoError();
   }
 }
 sealed class RegisterState extends Equatable{
